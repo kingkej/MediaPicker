@@ -98,6 +98,12 @@ private extension AlbumView {
                 )
             }
         }
+        
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            NotificationCenter.default.post(
+                name: photoLibraryChangeLimitedPhotosNotification,
+                object: nil)
+                    }
     }
 
     func fullscreenPresentedBinding() -> Binding<Bool> {

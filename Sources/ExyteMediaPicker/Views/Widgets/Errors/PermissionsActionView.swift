@@ -39,7 +39,7 @@ private extension PermissionsActionView {
         switch action {
         case .selectMore:
             PermissionsErrorView(text: "Setup Photos access to see more photos here") {
-                showSheet = true
+                openSettings()
             }
         case .authorize:
             goToSettingsButton(text: "Allow Photos access in settings to see photos here")
@@ -73,6 +73,17 @@ private extension PermissionsActionView {
                 }
             }
         )
+    }
+    
+    func openSettings() {
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+
+        if UIApplication.shared.canOpenURL(settingsUrl) {
+            UIApplication.shared.open(settingsUrl, completionHandler: { _ in
+            })
+        }
     }
 }
 

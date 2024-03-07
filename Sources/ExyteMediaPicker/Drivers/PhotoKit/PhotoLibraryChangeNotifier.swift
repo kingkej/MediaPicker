@@ -39,8 +39,10 @@ final class PhotoLibraryChangePermissionWatcher: NSObject, PHPhotoLibraryChangeO
 
     func photoLibraryDidChange(_ changeInstance: PHChange) {
         // gets called too often, even if nothing changed - a bug?
-        NotificationCenter.default.post(
-            name: photoLibraryChangePermissionNotification,
-            object: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            NotificationCenter.default.post(
+                name: photoLibraryChangeLimitedPhotosNotification,
+                object: nil)
+        }
     }
 }

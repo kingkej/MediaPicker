@@ -18,7 +18,7 @@ struct PermissionsErrorView: View {
                 Button {
                     action()
                 } label: {
-                    Text(text)
+                    Text(text.localized)
                 }
             } else {
                 Text(text)
@@ -31,4 +31,19 @@ struct PermissionsErrorView: View {
         .cornerRadius(5)
         .padding(.horizontal, 20)
     }
+}
+
+extension String {
+
+  var localized: String {
+    return NSLocalizedString(self, comment: "\(self)_comment")
+  }
+  
+  func localized(_ args: [CVarArg]) -> String {
+    return localized(args)
+  }
+  
+  func localized(_ args: CVarArg...) -> String {
+    return String(format: localized, args)
+  }
 }

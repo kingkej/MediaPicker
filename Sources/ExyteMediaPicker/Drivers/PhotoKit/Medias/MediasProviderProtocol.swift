@@ -36,7 +36,9 @@ class BaseMediasProvider: MediasProviderProtocol {
         cancellable = photoLibraryChangeLimitedPhotosPublisher
             .receive(on: RunLoop.main)
             .sink { [weak self] in
-                self?.reload()
+                withAnimation {
+                    self?.reload()
+                }
             }
     }
 
