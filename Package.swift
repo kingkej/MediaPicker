@@ -13,11 +13,15 @@ let package = Package(
             name: "ExyteMediaPicker",
             targets: ["ExyteMediaPicker"]),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git", .upToNextMinor(from: "0.0.4"))
+    ],
     targets: [
         .target(
             name: "ExyteMediaPicker",
-            dependencies: []
+            dependencies: [
+                .product(name: "SwiftfulLoadingIndicators", package: "SwiftfulLoadingIndicators")
+            ]
         ),
         .testTarget(
             name: "MediaPickerTests",

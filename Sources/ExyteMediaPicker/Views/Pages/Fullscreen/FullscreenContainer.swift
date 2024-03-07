@@ -4,6 +4,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftfulLoadingIndicators
 
 struct FullscreenContainer: View {
 
@@ -18,6 +19,7 @@ struct FullscreenContainer: View {
     @State var selection: AssetMediaModel.ID
     var selectionParamsHolder: SelectionParamsHolder
     var shouldDismiss: ()->()
+    @State var selectTapped = false
 
     private var selectedMediaModel: AssetMediaModel? {
         assetMediaModels.first { $0.id == selection }
@@ -31,11 +33,16 @@ struct FullscreenContainer: View {
     }
     
     var body: some View {
-        TabView(selection: $selection) {
-            ForEach(assetMediaModels, id: \.id) { assetMediaModel in
-                FullscreenCell(viewModel: FullscreenCellViewModel(mediaModel: assetMediaModel))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .tag(assetMediaModel.id)
+        ZStack {
+            TabView(selection: $selection) {
+                ForEach(assetMediaModels, id: \.id) { assetMediaModel in
+                    FullscreenCell(viewModel: FullscreenCellViewModel(mediaModel: assetMediaModel))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .tag(assetMediaModel.id)
+                }
+            }
+            if selectTapped {
+                LoadingIndicator(animation: .heart, color: .gray, size: .small)
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
@@ -76,23 +83,47 @@ struct FullscreenContainer: View {
                 .resizable()
                 .frame(width: 20, height: 20)
                 .padding([.horizontal, .bottom], 20)
+                .padding(.top)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    isPresented = false
+                    withAnimation {
+                        isPresented = false
+                    }
                 }
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .foregroundStyle(.ultraThinMaterial)
+                )
+                .padding(.horizontal)
+                .disabled(selectTapped)
+                .opacity(selectTapped ? 0.5 : 1.0)
 
             Spacer()
 
             if let selectedMediaModel = selectedMediaModel {
                 if selectionParamsHolder.selectionLimit == 1 {
                     Button("Select") {
+                        selectTapped = true
                         selectionService.onSelect(assetMediaModel: selectedMediaModel)
-                        shouldDismiss()
+                        DispatchQueue.main.async {
+                            withAnimation {
+                                shouldDismiss()
+                            }
+                        }
                     }
                     .padding([.horizontal, .bottom], 20)
+                    .padding(.top)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10)
+                            .foregroundStyle(.ultraThinMaterial)
+                    )
+                    .padding(.horizontal)
+                    .disabled(selectTapped)
+                    .opacity(selectTapped ? 0.5 : 1.0)
                 } else {
                     SelectIndicatorView(index: selectionServiceIndex, isFullscreen: true, canSelect: selectionService.canSelect(assetMediaModel: selectedMediaModel), selectionParamsHolder: selectionParamsHolder)
                         .padding([.horizontal, .bottom], 20)
+                        .padding(.top)
                         .contentShape(Rectangle())
                         .onTapGesture {
                             selectionService.onSelect(assetMediaModel: selectedMediaModel)
@@ -101,5 +132,8 @@ struct FullscreenContainer: View {
             }
         }
         .foregroundStyle(theme.selection.fullscreenTint)
+        .onDisappear {
+            selectTapped = false
+        }
     }
 }
