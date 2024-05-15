@@ -109,7 +109,10 @@ public struct MediaPicker<AlbumSelectionContent: View, CameraSelectionContent: V
         .environmentObject(cameraSelectionService)
         .environmentObject(permissionService)
         .onAppear {
-            permissionService.askLibraryPermissionIfNeeded()
+            if showingLiveCameraCell {
+                permissionService.requestCameraPermission()
+            }
+            permissionService.checkPhotoLibraryAuthorizationStatus()
 
             selectionService.onChange = onChange
             selectionService.mediaSelectionLimit = selectionParamsHolder.selectionLimit
@@ -297,14 +300,21 @@ public struct MediaPicker<AlbumSelectionContent: View, CameraSelectionContent: V
     @ViewBuilder
     func cameraSheet(didTakePicture: @escaping ()->(), didPressCancel: @escaping ()->()) -> some View {
 #if targetEnvironment(simulator)
-        CameraStubView(isPresented: cameraBinding())
+        CameraStubView {
+            didPressCancel()
+        }
 #elseif os(iOS)
-        if let cameraViewBuilder = cameraViewBuilder {
-            CustomCameraView<CameraViewContent>(viewModel: viewModel, didTakePicture: didTakePicture, didPressCancel: didPressCancel, cameraViewBuilder: cameraViewBuilder)
-                .ignoresSafeArea()
-        } else {
-            StandardConrolsCameraView(viewModel: viewModel, didTakePicture: didTakePicture, didPressCancel: didPressCancel, selectionParamsHolder: selectionParamsHolder)
-                .ignoresSafeArea()
+        Group {
+            if let cameraViewBuilder = cameraViewBuilder {
+                CustomCameraView<CameraViewContent>(viewModel: viewModel, didTakePicture: didTakePicture, didPressCancel: didPressCancel, cameraViewBuilder: cameraViewBuilder)
+                    .ignoresSafeArea()
+            } else {
+                StandardConrolsCameraView(viewModel: viewModel, didTakePicture: didTakePicture, didPressCancel: didPressCancel, selectionParamsHolder: selectionParamsHolder)
+                    .ignoresSafeArea()
+            }
+        }
+        .onAppear {
+            permissionService.requestCameraPermission()
         }
 #endif
     }
