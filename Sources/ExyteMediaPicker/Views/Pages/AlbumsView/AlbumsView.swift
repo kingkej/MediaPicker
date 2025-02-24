@@ -23,9 +23,8 @@ struct AlbumsView: View {
 
     @State private var showingLoadingCell = false
 
-    let minColumnWidth = 100.0
     private var columns: [GridItem] {
-        [GridItem(.adaptive(minimum: minColumnWidth), spacing: 0, alignment: .top)]
+        [GridItem(.adaptive(minimum: 100), spacing: 0, alignment: .top)]
     }
     
     private var cellPadding: EdgeInsets {
@@ -46,15 +45,14 @@ struct AlbumsView: View {
                         .font(.title3)
                         .foregroundColor(theme.main.text)
                 } else {
-                    GeometryReader { g in
-                        let columnWidth = calculateColumnWidth(g.size.width)
-                        LazyVGrid(columns: columns, spacing: 0) {
-                            ForEach(viewModel.albums) { album in
-                                AlbumCell(viewModel: AlbumCellViewModel(album: album), size: columnWidth)
-                                    .padding(cellPadding)
-                                    .onTapGesture {
-                                        mediaPickerViewModel.setPickerMode(.album(album.toAlbum()))
-                                    }
+                    LazyVGrid(columns: columns, spacing: 0) {
+                        ForEach(viewModel.albums) { album in
+                            AlbumCell(
+                                viewModel: AlbumCellViewModel(album: album)
+                            )
+                            .padding(cellPadding)
+                            .onTapGesture {
+                                mediaPickerViewModel.setPickerMode(.album(album.toAlbum()))
                             }
                         }
                     }
@@ -68,10 +66,5 @@ struct AlbumsView: View {
         .onDisappear {
             viewModel.onStop()
         }
-    }
-
-    func calculateColumnWidth(_ gridWidth: CGFloat) -> CGFloat {
-        let wholeCount = CGFloat(Int(gridWidth / minColumnWidth))
-        return gridWidth / wholeCount
     }
 }

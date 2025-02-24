@@ -60,8 +60,8 @@ private extension AlbumView {
                             }
                         }
 #endif
-                    } content: { assetMediaModel, cellSize in
-                        cellView(assetMediaModel, size: cellSize)
+                    } content: { assetMediaModel in
+                        cellView(assetMediaModel)
                     } loadingCell: {
                         if shouldShowLoadingCell {
                             ZStack {
@@ -118,7 +118,7 @@ private extension AlbumView {
     }
 
     @ViewBuilder
-    func cellView(_ assetMediaModel: AssetMediaModel, size: CGFloat) -> some View {
+    func cellView(_ assetMediaModel: AssetMediaModel) -> some View {
         let imageButton = Button {
             if keyboardHeightHelper.keyboardDisplayed {
                 dismissKeyboard()
@@ -133,7 +133,7 @@ private extension AlbumView {
                 fullscreenItem = assetMediaModel
             }
         } label: {
-            MediaCell(viewModel: MediaViewModel(assetMediaModel: assetMediaModel), size: size)
+            MediaCell(viewModel: MediaViewModel(assetMediaModel: assetMediaModel))
         }
         .buttonStyle(MediaButtonStyle())
         .contentShape(Rectangle())

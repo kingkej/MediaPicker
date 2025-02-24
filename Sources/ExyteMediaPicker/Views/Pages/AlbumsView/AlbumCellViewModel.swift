@@ -26,10 +26,8 @@ class AlbumCellViewModel: ObservableObject {
         guard preview == nil else { return }
         
         requestID = album.preview?.asset
-            .image(size: size) { [weak self] image in
-                DispatchQueue.main.async {
-                    self?.preview = image
-                }
+            .image(size: size) { [weak self] in
+                self?.preview = $0
             }
     }
 

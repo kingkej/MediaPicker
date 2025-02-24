@@ -6,20 +6,21 @@ import SwiftUI
 
 struct AlbumCell: View {
 
-    @Environment(\.mediaPickerTheme) private var theme
-
     @StateObject var viewModel: AlbumCellViewModel
-    var size: CGFloat
 
+    @Environment(\.mediaPickerTheme) private var theme
+    
     var body: some View {
         VStack {
             Rectangle()
                 .aspectRatio(1, contentMode: .fit)
                 .overlay {
-                    ThumbnailView(preview: viewModel.preview, size: size)
-                        .onAppear {
-                            viewModel.fetchPreview(size: CGSize(width: size, height: size))
-                        }
+                    GeometryReader { geometry in
+                        ThumbnailView(preview: viewModel.preview)
+                            .onAppear {
+                                viewModel.fetchPreview(size: geometry.size)
+                            }
+                    }
                 }
                 .clipped()
                 .foregroundColor(theme.main.albumSelectionBackground)
