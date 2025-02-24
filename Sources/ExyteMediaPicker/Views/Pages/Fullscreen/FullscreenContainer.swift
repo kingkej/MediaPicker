@@ -42,7 +42,7 @@ struct FullscreenContainer: View {
                 }
             }
             if selectTapped {
-                LoadingIndicator(animation: .heart, color: .gray, size: .small)
+                LoadingIndicator(animation: .threeBalls, color: .gray, size: .small)
             }
         }
         .tabViewStyle(.page(indexDisplayMode: .never))
